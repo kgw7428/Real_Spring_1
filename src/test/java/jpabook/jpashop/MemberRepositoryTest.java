@@ -11,15 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class) // junit에 spring관련 프로젝트임 알림
+@RunWith(SpringRunner.class) // junit에 spring관련 프로젝트를 알림
 @SpringBootTest
-@Rollback(false)
 public class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
 
     @Test
     @Transactional
+    @Rollback(value = false)
     public void testMember() throws Exception{
         //given
         Member member = new Member();
@@ -33,7 +33,7 @@ public class MemberRepositoryTest {
         Assertions.assertThat(findMember.getId()).isEqualTo(member.getId());
         Assertions.assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
         Assertions.assertThat(findMember).isEqualTo(member);
-
+        System.out.println("findMember == member: " + (findMember==member));
     }
 
 }
