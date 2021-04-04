@@ -26,6 +26,42 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
+    public List<Order> findALlByString(OrderSearch orderSearch) {
+        //language=JPQL
+        String jpql = "select o From Order o join o.member m";
+        boolean isFirstCondition = true;
+
+        //주문 상태 검색
+        if (orderSearch.getOrderStatus() != null) {
+            if (isFirstCondition) {
+                jpql += " where";
+                isFirstCondition = false;
+            } else {
+                jpql += " and";
+            }
+            jpql += " o.status = :status";
+        }
+
+        //회원 이름 검색
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
+            if (isFirstCondition) {
+                jpql += " where";
+                isFirstCondition = false;
+            } else {
+                jpql += " and";
+            }
+            jpql += " m.name like :name";
+        }
+        TypedQuery<Order> query = em.createQuery(jpql, Order.class)
+                .setMaxResults(1000); //최대 1000건
+        if (orderSearch.getOrderStatus() != null) {
+            query = query.setParameter("status", orderSearch.getOrderStatus());
+        }
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
+            query = query.setParameter("name", orderSearch.getMemberName());
+        }
+        return query.getResultList();
+    }
     /**
      * JPA Criteria
      * 이 방법은 자주 사용하는 방법이 아니며, Query DSL을 이용하여 간단하게 이 기능을 사용할 수 있다.
